@@ -27,8 +27,8 @@ function dbStart(){
             type:"list",
             message:"Welcome to Employee DB. \n Here you will be able to search/add employees, departments, or roles.\n What would you like to do?",
             choices: [
-                "View departments",
                 "View employees",
+                "View departments",
                 "View roles",
                 "Add departments",
                 "Add employees",
@@ -38,19 +38,19 @@ function dbStart(){
         })
         .then(function(answer) {
             switch (answer.menu) {
-                case "View departments":
-                    //View via dep
-                    console.log("Department");
+                case "View employees":
+                    
+                    employeeView();
                     break;
                 
-                case "View employees":
-                    //view via employees
-                    console.log("Employees");
+                case "View departments":
+                   
+                    departmentView();
                     break;
 
                 case "View roles":
-                    //view via roles
-                    console.log("Roles");
+                   
+                    roleView();
                     break;
                 case "Add departments":
                     //add departments
@@ -73,10 +73,35 @@ function dbStart(){
         });
 };
 
-function depSearch(){
-    inquirer
-        .prompt({
-            name:"department",
-            type:""
-        })
-}
+function employeeView(){
+    let query = "SELECT first_name, last_name, role_id, manager_id FROM employee";
+    connection.query(query, function(err, res){
+        for (let i = 0; i < res.length; i++) {
+            console.table("Name: " + res[i].first_name + " " + res[i].last_name);
+            //need to get role and manager name.
+        }
+        dbStart();
+    })
+};
+
+function departmentView(){
+    let query = "SELECT department_id, department_name FROM department";
+    connection.query(query, function(err, res){
+        for (let i = 0; i < res.length; i++) {
+            console.table(" Department("+ res[i].department_id + ") : "   + res[i].department_name);
+            
+        }
+        dbStart();
+    })
+};
+
+function roleView(){
+    let query = "SELECT roles, salary FROM role";
+    connection.query(query, function(err, res){
+        for (let i = 0; i < res.length; i++) {
+            console.table("Role : " + res[i].roles + "  Salary : " + res[i].salary);
+            
+        }
+        dbStart();
+    })
+};

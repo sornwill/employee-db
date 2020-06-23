@@ -30,8 +30,8 @@ function dbStart(){
                 "View employees",
                 "View departments",
                 "View roles",
-                "Add departments",
                 "Add employees",
+                "Add departments",
                 "Add roles",
                 "Exit"
             ]
@@ -52,14 +52,14 @@ function dbStart(){
                    
                     roleView();
                     break;
-                case "Add departments":
-                    //add departments
-                    console.log("Add Department");
+                case "Add employees":
+                    
+
                     break;
 
-                case "Add employees":
-                    //add employees
-                    console.log("Add Employee");
+                case "Add departments":
+                   
+                    departmentAdd();
                     break;
 
                 case "Add roles":
@@ -100,4 +100,21 @@ function roleView(){
        console.table(res);
         dbStart();
     })
+};
+
+function departmentAdd() {
+    inquirer
+        .prompt({
+            name:"add",
+            type:"input",
+            message:"Enter new department name."
+        })
+        .then(function(answer){
+            console.log("\n Adding " + answer.add + "...\n");
+            connection.query(
+                "INSERT INTO department SET ?",
+                {department_name: answer.add}
+            )
+            dbStart();
+        })
 };

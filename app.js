@@ -74,34 +74,30 @@ function dbStart(){
 };
 
 function employeeView(){
-    let query = "SELECT first_name, last_name, role_id, manager_id FROM employee";
+    let query = "SELECT employee.employee_id, employee.first_name, employee.last_name, role.roles, employee.manager_id ";
+    query += "FROM employee ";
+    query+= "INNER JOIN role ON employee.role_id = role.role_id";
     connection.query(query, function(err, res){
-        for (let i = 0; i < res.length; i++) {
-            console.table("Name: " + res[i].first_name + " " + res[i].last_name);
-            //need to get role and manager name.
-        }
+        if (err) throw err;
+        console.table(res);
         dbStart();
     })
 };
 
 function departmentView(){
-    let query = "SELECT department_id, department_name FROM department";
+    let query = "SELECT * FROM department";
     connection.query(query, function(err, res){
-        for (let i = 0; i < res.length; i++) {
-            console.table(" Department("+ res[i].department_id + ") : "   + res[i].department_name);
-            
-        }
+       if (err) throw err;
+       console.table(res);
         dbStart();
     })
 };
 
 function roleView(){
-    let query = "SELECT roles, salary FROM role";
+    let query = "SELECT * FROM role";
     connection.query(query, function(err, res){
-        for (let i = 0; i < res.length; i++) {
-            console.table("Role : " + res[i].roles + "  Salary : " + res[i].salary);
-            
-        }
+       if (err) throw err;
+       console.table(res);
         dbStart();
     })
 };

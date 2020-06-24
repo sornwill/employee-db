@@ -30,12 +30,12 @@ CREATE TABLE employee (
 #PREPOPULATE 
 
 INSERT INTO department (department_name)
-VALUES ("Human Resources"), ("IT"), ("Logistics"), ("Sales");
+VALUES ("Human Resources"), ("IT"), ("Logistics"), ("Sales"), ("Management");
 
 INSERT INTO role (roles, salary, department_id)
-VALUES ("IT Lead", 90000.00, 2), ("Customer Service Rep", 35000.00, 4), ("Logistics Lead", 120000, 3), ("HR LADY", 75000, 1);
+VALUES ("IT Lead", 90000.00, 2), ("Customer Service Rep", 35000.00, 4), ("Logistics Lead", 120000, 3), ("HR LADY", 75000, 1), ("CEO", 200000, 5);
 
-INSERT INTO employee (first_name, last_name, role_id)
-VALUES ("Bob", "Ross", 1), ("Hugo", "The Dude", 3), ("Young", "Man", 2), ("The", "Lady", 4);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Big", "O", 5, null), ("Bob", "Ross", 1, 1), ("Hugo", "The Dude", 3, 1), ("Young", "Man", 2, 1), ("The", "Lady", 4, 1);
 
 SELECT * FROM employee;

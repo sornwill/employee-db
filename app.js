@@ -63,7 +63,8 @@ function dbStart(){
                     break;
 
                 case "Add roles":
-                    console.log("Add roles");
+                    
+                    roleAdd();
                     break;
 
                 case "Exit":
@@ -111,10 +112,57 @@ function departmentAdd() {
         })
         .then(function(answer){
             console.log("\n Adding " + answer.add + "...\n");
-            connection.query(
-                "INSERT INTO department SET ?",
+            connection.query("INSERT INTO department SET ?",
                 {department_name: answer.add}
             )
             dbStart();
         })
+};
+
+function roleAdd() {
+    connection.query("SELECT * FROM department", function (err, res){ 
+        inquirer
+            .prompt([
+                {
+                    name:"role",
+                    type:"input",
+                    message:"What is the title of the role?"
+                },
+                {
+                    name:"salary",
+                    type:"input",
+                    message:"What is the salary?"
+                },
+                {
+                    name:"department",
+                    type:"list",
+                    choices: function() {
+                        let choice = [];
+                        for(let i = 0; i < res.length; i++) {
+                            console.log(res[i].department_id + " = " + res[i].department_name); // Kinda ugly. Can't think of a way to make it cleaner.
+                            choice.push(res[i].department_id);
+                        };
+                        return choice;
+                    },
+                    message:"Choose a department for role."
+                }
+            ])
+            .then(function(answer){
+                console.log("\n Adding " + answer.role + "...");
+
+                connection.query("INSERT INTO role SET ?",
+                    [
+                        {
+                            roles: answer.role,
+                            salary: answer.salary,
+                            department_id: answer.department
+                        }
+                    ],
+                    function(err) {
+                        if(err) throw err;
+                        dbStart();
+                    }
+                )
+            }); 
+        });
 };

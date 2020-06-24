@@ -139,12 +139,12 @@ function roleAdd() {
                     choices: function() {
                         let choice = [];
                         for(let i = 0; i < res.length; i++) {
-                            console.log(res[i].department_id + " = " + res[i].department_name); // Kinda ugly. Can't think of a way to make it cleaner.
                             choice.push(res[i].department_id);
                         };
+                        console.table(res); // Not ideal. Can't figure out how to make names display instead of number but then return id.
                         return choice;
                     },
-                    message:"Choose a department for role."
+                    message:"Choose a department for role. Choose # according to department name."
                 }
             ])
             .then(function(answer){

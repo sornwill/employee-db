@@ -54,7 +54,7 @@ function dbStart(){
                     break;
                 case "Add employees":
                     
-
+                    employeeAdd();
                     break;
 
                 case "Add departments":
@@ -68,6 +68,7 @@ function dbStart(){
                     break;
 
                 case "Exit":
+
                     connection.end();
                     break;
             };
@@ -78,6 +79,7 @@ function employeeView(){
     let query = "SELECT employee.employee_id, employee.first_name, employee.last_name, role.roles, employee.manager_id ";
     query += "FROM employee ";
     query+= "INNER JOIN role ON employee.role_id = role.role_id";
+
     connection.query(query, function(err, res){
         if (err) throw err;
         console.table(res);
@@ -166,3 +168,140 @@ function roleAdd() {
             }); 
         });
 };
+
+function employeeAdd() {
+    connection.query("SELECT * FROM role", function (err, res){ 
+        inquirer
+            .prompt([
+                {
+                    name:"first",
+                    type:"input",
+                    message:"What is the employee's first name?"
+                },
+                {
+                    name:"last",
+                    type:"input",
+                    message:"What is the employee's last name??"
+                },
+                {
+                    name:"role",
+                    type:"list",
+                    choices: function() {
+                        let choice = [];
+                        for(let i = 0; i < res.length; i++) {
+                            choice.push(res[i].role_id);
+                        };
+                        console.table(res); // Not ideal. Can't figure out how to make names display instead of number but then return id.
+                        return choice;
+                    },
+                    message:"Choose role id for employee. Choose # according to role."
+                },
+                {
+                    name:"manager",
+                    type:"list",
+                    choices: function() {
+                        let choice = [];
+                        for(let i = 0; i < res.length; i++) {
+                            choice.push(res[i].manager_id);
+                        };
+                        console.table(res); // Not ideal. Can't figure out how to make names display instead of number but then return id.
+                        return choice;
+                    },
+                    message:"Who is in charge of employee? Choose # according to person in charge."
+                }
+            ])
+            .then(function(answer){
+                console.log("\n Adding " + answer.first + " " + answer.last + "...");
+
+                connection.query("INSERT INTO employee SET ?",
+                    [
+                        {
+                            first_name: answer.first,
+                            last_name: answer.last,
+                            role_id: answer.role,
+                            manager_id: answer.manager
+                        }
+                    ],
+                    function(err) {
+                        if(err) throw err;
+                        dbStart();
+                    }
+                )
+            }); 
+        });
+};
+
+// function employeeAdd() {
+//     let query = "SELECT employee.employee_id, employee.first_name, employee.last_name, role.roles, employee.manager_id ";
+//     query += "FROM employee ";
+//     query+= "INNER JOIN role ON employee.role_id = role.role_id"; // testing joins later
+
+//     connection.query(query, function(err, res){
+//         if (err) throw err;
+        
+//         inquirer
+//             .prompt([
+//                 {
+//                     name:"first",
+//                     type:"input",
+//                     message:"Enter employee's first name."
+//                 },
+//                 {
+//                     name:"last",
+//                     type:"input",
+//                     message:"Enter employee's last name."
+//                 },
+//                 {
+//                     name:"role",
+//                     type:"rawlist",
+//                     choices: function (){
+//                         connection.query("SELECT * FROM role", function (err,res){
+                        
+//                         }).then(function(answer){
+//                             let choice = [];
+//                         for(let i = 0; i < res.length; i++){
+//                             choice.push(res[i].role_name);
+//                         }
+//                         console.table(res);
+//                         console.log(choice);
+//                         return choice;
+//                         })
+//                     },
+//                     message: "Choose a role for employee. Choose # according to role."
+//                 },
+//                 {
+//                     name:"manager",
+//                     type:"rawlist",
+//                     choices: function (){
+//                         connection.query("SELECT * FROM employee", function (err,res){
+//                             let choice = [];
+//                             for(let i = 0; i < res.length; i++){
+//                                 choice.push(res[i].employee_name);
+//                             }
+//                             console.table(res);
+//                             console.log(choice);
+//                             return choice;
+//                             })
+//                     },
+//                     message:"Who is the manager for employee? Choose # according to person."
+//                 }
+//             ])
+//             .then(function(answer){
+//                 console.log("\n Adding " + answer.first + " " + answer.last + "...");
+//                 connection.query("INSERT INTO employees SET?",
+//                     [
+//                         {
+//                             first_name: answer.first,
+//                             last_name: answer.last,
+//                             role_id: answer.role,
+//                             manager_id: answer.manager
+//                         }
+//                     ],
+//                     function(err) {
+//                         if(err) throw err;
+//                         dbStart();
+//                     }
+//                 )
+//             })
+//         });
+// };

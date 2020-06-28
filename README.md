@@ -24,7 +24,7 @@ A NodeJS Program that takes data from MySQL to display employee information such
 URL : https://github.com/sornwill/employee-db/
 
 ## Screenshots/Video
-[![yt](http://img.youtube.com/vi/PA0s04XEqCw/0.jpg)](http://www.youtube.com/watch?v=PA0s04XEqCw "yt")
+![exampledb](/assets/exampledb.mov)
     
 ## Installation
 npm i inquirer, npm i mysql, npm i console.table 

@@ -25,7 +25,7 @@ function dbStart(){
         .prompt({
             name:"menu",
             type:"list",
-            message:"Welcome to Employee DB. \n Here you will be able to search/add/remove employees, departments, or roles.\n What would you like to do?",
+            message:"Welcome to Employee DB. \n Here you will be able to view/add/remove employees, departments, or roles.\n What would you like to do?",
             choices: [
                 "View employees",
                 "View departments",
@@ -84,6 +84,11 @@ function dbStart(){
                 case "Remove department":
 
                     removeDep();
+                    break;
+                
+                case "Remove role":
+
+                    removeRole();
                     break;
 
                 case "Exit":
@@ -294,7 +299,7 @@ function removeEmp(){
                         for(let i = 0; i < res.length; i++){
                             choice.push(res[i].first_name);
                         };
-                        console.table(res);
+                        
                         return choice;
                     },
                     message: "Select first name of employee you wish to remove."
@@ -323,7 +328,7 @@ function removeDep(){
                         for(let i = 0; i < res.length; i++){
                             choice.push(res[i].department_name);
                         };
-                        console.table(res);
+                      
                         return choice;
                     },
                     message: "Select department you wish to remove."
@@ -335,7 +340,37 @@ function removeDep(){
                 function(err){
                     if (err) throw err;
                     dbStart();
-                })
-            })
-    })
-}
+                });
+            });
+    });
+};
+
+function removeRole(){
+    connection.query("SELECT * FROM role", function(err,res){
+        inquirer
+            .prompt([
+                {
+                    name:"role",
+                    type:"list",
+                    choices: function(){
+                        let choice = [];
+                        for(let i = 0; i < res.length; i++){
+                            choice.push(res[i].roles);
+                        };
+                      
+                        return choice;
+                    },
+                    message: "Select role you wish to remove."
+                }
+            ])
+            .then(function(answer){
+                connection.query("DELETE FROM role WHERE roles = ? ",
+                [answer.role],
+                function(err){
+                    if (err) throw err;
+                    dbStart();
+                });
+            });
+    });
+};
+

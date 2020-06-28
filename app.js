@@ -25,7 +25,7 @@ function dbStart(){
         .prompt({
             name:"menu",
             type:"list",
-            message:"Welcome to Employee DB. \n Here you will be able to search/add employees, departments, or roles.\n What would you like to do?",
+            message:"Welcome to Employee DB. \n Here you will be able to search/add/remove employees, departments, or roles.\n What would you like to do?",
             choices: [
                 "View employees",
                 "View departments",
@@ -34,6 +34,9 @@ function dbStart(){
                 "Add departments",
                 "Add roles",
                 "Update employee roles",
+                "Remove employee",
+                "Remove department",
+                "Remove role",
                 "Exit"
             ]
         })
@@ -67,10 +70,22 @@ function dbStart(){
                     
                     roleAdd();
                     break;
+
                 case "Update employee roles":
 
                     employeeRoleUpdate();
                     break;
+
+                case "Remove employee":
+
+                    removeEmp();
+                    break;
+
+                case "Remove department":
+
+                    removeDep();
+                    break;
+
                 case "Exit":
 
                     connection.end();
@@ -229,39 +244,98 @@ function employeeAdd() { // needs work with JOINS
 };
 
 function employeeRoleUpdate(){ // WANT choose a selection of employees name THEN choose a selection of existing roles THEN UPDATE role to existing employee.
-    let query = "SELECT employee.employee_id, employee.first_name, employee.last_name, role.roles, employee.manager_id ";
-    query += "FROM employee ";
-    query+= "INNER JOIN role ON employee.role_id = role.role_id";
-
-    connection.query(query, function(err,res) {
-        if (err) throw err;
+    connection.query("SELECT * FROM role", function(err, res){
 
         inquirer
             .prompt([
                 {
                     name:"first",
+                    type:"input",
+                    message:"Enter the first name of the employee you wish to update."
+                },
+                {
+                    name:"last",
+                    type:"input",
+                    message:"Enter the last name of the employee you wish to update."
+                },
+                {
+                    name: "role",
+                    type: "list",
+                    choices: function() {
+                        let choice = [];
+                        for(let i = 0; i < res.length; i++) {
+                            choice.push(res[i].role_id);
+                        };
+                        console.table(res); // Not ideal. Can't figure out how to make names display instead of number but then return id.
+                     return choice;
+                },
+                    message:"Choose a role you wish to update. Choose # according to role."
+                }
+            ]).then(function(answer) {
+                connection.query("UPDATE employee SET role_id = ? WHERE first_name = ? AND last_name = ?",
+                [answer.role, answer.first, answer.last],
+                function(err){
+                    if(err) throw err;
+                    dbStart();
+                })
+            })
+    })
+};
+
+function removeEmp(){
+    connection.query("SELECT * FROM employee", function(err,res){
+        inquirer
+            .prompt([
+                {
+                    name:"first",
                     type:"list",
-                    message:"Select Employee you wish to update.",
                     choices: function(){
                         let choice = [];
                         for(let i = 0; i < res.length; i++){
                             choice.push(res[i].first_name);
-                        }
+                        };
+                        console.table(res);
                         return choice;
-                    }
-                },
-                {
-                    name:"role",
-                    type:"list",
-                    message:"Select a role for employee.",
-                    choices: function(){
-                        let roleChoice = [];
-                        for(let i = 0; i < res.length; i++){
-                            roleChoice.push(res[i].role_id);
-                        }
-                        return roleChoice;
-                    }
+                    },
+                    message: "Select first name of employee you wish to remove."
                 }
             ])
+            .then(function(answer){
+                connection.query("DELETE FROM employee WHERE first_name = ? ",
+                [answer.first],
+                function(err){
+                    if (err) throw err;
+                    dbStart();
+                });
+            });
+    });
+};
+
+function removeDep(){
+    connection.query("SELECT * FROM department", function(err,res){
+        inquirer
+            .prompt([
+                {
+                    name:"dep",
+                    type:"list",
+                    choices: function(){
+                        let choice = [];
+                        for(let i = 0; i < res.length; i++){
+                            choice.push(res[i].department_name);
+                        };
+                        console.table(res);
+                        return choice;
+                    },
+                    message: "Select department you wish to remove."
+                }
+            ])
+            .then(function(answer){
+                connection.query("DELETE FROM department WHERE department_name = ? ",
+                [answer.dep],
+                function(err){
+                    if (err) throw err;
+                    dbStart();
+                })
+            })
     })
 }
